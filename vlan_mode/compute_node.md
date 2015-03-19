@@ -16,15 +16,15 @@ f758a8b8-2fd0-4a47-ab2d-c49d48304f82
         Port "qvoXXX"
             tag: 1
             Interface "qvoXXX"
-Port "qvoYYY"
+        Port "qvoYYY"
             tag: 1
             Interface "qvoYYY"
-Port "qvoZZZ"
-     tag: 2
-     Interface "qvoZZZ"
-Port "qvoWWW"
-     tag: 2
-     Interface "qvoWWW"
+        Port "qvoZZZ"
+             tag: 2
+             Interface "qvoZZZ"
+        Port "qvoWWW"
+             tag: 2
+             Interface "qvoWWW"
         Port "int-br-eth1"
             Interface "int-br-eth1"
         Port br-int

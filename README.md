@@ -11,6 +11,8 @@
 感谢所有的 [贡献者](https://github.com/yeasy/openstack_understand_Neutron/graphs/contributors)。
 
 ## 更新历史:
+* V0.7: 2015-03-19
+	* 添加 VXLAN 模式分析。
 * V0.6: 2014-04-04
 	* 修正系统结构的图表；
     * 修正部分描述。

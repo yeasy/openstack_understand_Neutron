@@ -10,6 +10,8 @@
    * [计算节点](vlan_mode/compute_node.md)
    * [网络节点](vlan_mode/network_node.md)
 * [VXLAN 模式](vxlan_mode/README.md)
+   * [计算节点](vxlan_mode/compute_node.md)
+   * [网络节点](vxlan_mode/network_node.md)
 * [安全组](security_group/README.md)
    * [INPUT](security_group/input.md)
    * [OUTPUT](security_group/output.md)
