@@ -1,77 +1,10 @@
-## 计算节点
-
-如图所示。
-
-
-主要包括两个网桥：集成网桥 br-int 和 隧道网桥 br-tun。
-
-```sh
-$ sudo ovs-vsctl show
-225f3eb5-6059-4063-99c3-8666915c9c55
-    Bridge br-int
-        fail_mode: secure
-        Port br-int
-            Interface br-int
-                type: internal
-        Port "qvo1bb4c010-3e"
-            Interface "qvo1bb4c010-3e"
-        Port patch-tun
-            Interface patch-tun
-                type: patch
-                options: {peer=patch-int}
-    Bridge br-tun
-        fail_mode: secure
-        Port "vxlan-0a00644d"
-            Interface "vxlan-0a00644d"
-                type: vxlan
-                options: {df_default="true", in_key=flow, local_ip="10.0.100.88", out_key=flow, remote_ip="10.0.100.77"}
-        Port patch-int
-            Interface patch-int
-                type: patch
-                options: {peer=patch-tun}
-        Port br-tun
-            Interface br-tun
-                type: internal
-    ovs_version: "2.0.2"
-```
-
-安全网桥可以通过 `brctl show` 命令看到，该网桥主要用于绑定控制组的 iptables 规则，跟转发无直接关系。
-
-### br-int
-集成网桥规则比较简单，作为一个正常的二层交换机使用。
-
-```sh
-$ sudo ovs-vsctl show
-225f3eb5-6059-4063-99c3-8666915c9c55
-    Bridge br-int
-        fail_mode: secure
-        Port br-int
-            Interface br-int
-                type: internal
-        Port "qvo1bb4c010-3e"
-            Interface "qvo1bb4c010-3e"
-        Port patch-tun
-            Interface patch-tun
-                type: patch
-                options: {peer=patch-int}
-
-    ovs_version: "2.0.2"
-```
-
-
-```sh
-$ sudo ovs-ofctl dump-flows br-int
-NXST_FLOW reply (xid=0x4):
- cookie=0x0, duration=52889.682s, table=0, n_packets=161, n_bytes=39290, idle_age=13, priority=1 actions=NORMAL
- cookie=0x0, duration=52889.451s, table=23, n_packets=0, n_bytes=0, idle_age=52889, priority=0 actions=drop
-
-```
-
 ### br-tun
 
+br-tun 作为虚拟化层网桥，规则就要复杂一些。
+要将内部过来的网包进行合理甄别，内部带着正确 vlan tag 过来的，从正确的 tunnel 扔出去；外面带着正确 tunnel 号过来的，要改到对应的内部 vlan tag 扔到里面。
+
 ```sh
-$ sudo ovs-vsctl show
-    Bridge br-tun
+Bridge br-tun
         fail_mode: secure
         Port "vxlan-0a00644d"
             Interface "vxlan-0a00644d"
@@ -110,7 +43,7 @@ NXST_FLOW reply (xid=0x4):
 
 这些规则组成如下图所示的转发逻辑。
 
-![br-tun 的转发逻辑](../_images/ovs_rules_compute_br_tun.png)
+![br-tun 的转发逻辑](../../_images/ovs_rules_compute_br_tun.png)
 
 #### 表 0
 先看 table0 中的规则
@@ -166,7 +99,7 @@ NXST_FLOW reply (xid=0x4):
  cookie=0x0, duration=38.551s, table=20, n_packets=9, n_bytes=694, hard_timeout=300, idle_age=33, hard_age=33, priority=1,vlan_tci=0x0001/0x0fff,dl_dst=fa:16:3e:83:95:fa actions=load:0->NXM_OF_VLAN_TCI[],load:0x3e9->NXM_NX_TUN_ID[],output:2
  cookie=0x0, duration=327.504s, table=20, n_packets=0, n_bytes=0, idle_age=327, priority=0 actions=resubmit(,22)
 ```
-其中，第一条规则就是表 10 学习来的结果。对于 vlan 号为 1，目标 mac 是 fa:16:3e:83:95:fa（这个 mac 作为源 mac 从 tunnel 来过）的网包，去掉 vlan 号，添加当时的 vxlan 号，并从 tunnel 发出。
+其中，第一条规则就是表 10 学习来的结果。对于 vlan 号为 1，目标 mac 是 fa:16:3e:83:95:fa（之前，我们从虚拟机内 ping 10.0.0.1，这个 mac 作为源 mac 从 tunnel 来过）的网包，去掉 vlan 号，添加当时的 vxlan 号，并从 tunnel 发出。
 
 对于没学习到规则的网包，则扔给表 22 处理。
 
@@ -175,3 +108,4 @@ NXST_FLOW reply (xid=0x4):
  cookie=0x0, duration=50.94s, table=22, n_packets=11, n_bytes=1334, idle_age=29, dl_vlan=1 actions=strip_vlan,set_tunnel:0x3e9,output:2
  cookie=0x0, duration=327.261s, table=22, n_packets=10, n_bytes=808, idle_age=51, priority=0 actions=drop
 ```
+表 22 检查如果 vlan 号正确，则去掉 vlan 头后从 tunnel 扔出去。

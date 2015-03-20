@@ -57,7 +57,7 @@ NXST_FLOW reply (xid=0x4):
  cookie=0x0, duration=608.373s, table=0, n_packets=23, n_bytes=1706, idle_age=65534, hard_age=65534, priority=2,in_port=5 actions=drop
  cookie=0x0, duration=675.373s, table=0, n_packets=58, n_bytes=10625, idle_age=24, hard_age=65534, priority=1 actions=NORMAL
 ```
-1.4.2.2	br-int
+###	br-int
 br-int上挂载了大量的agent来提供各种网络服务，另外负责对发往br-eth1的流量，实现local vlan转化为外部vlan。
 ```sh
 #ovs-ofctl dump-flows br-int
