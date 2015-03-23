@@ -27,6 +27,11 @@
    * [整体逻辑](security_group/global_logic.md)
    * [快速查找安全组规则](security_group/quick_find.md)
    * [其它](security_group/other.md)
+* [分布式路由](dvr/README.md)
+   * [典型场景](dvr/scenario.md)
+   * [网络节点](dvr/network_node.md)
+   * [计算节点](dvr/compute_node.md)
+   * [配置](dvr/config.md)
 * [参考](ref/README.md)
 * [附：安装配置](appendix_install/README.md)
 
