@@ -11,6 +11,8 @@
 感谢所有的 [贡献者](https://github.com/yeasy/openstack_understand_Neutron/graphs/contributors)。
 
 ## 更新历史:
+* V0.8: 2015-03-24
+	* 添加 LBaaS 服务分析；
 * V0.7: 2015-03-23
 	* 添加 VXLAN 模式分析；
 	* 添加 DVR 服务分析。
