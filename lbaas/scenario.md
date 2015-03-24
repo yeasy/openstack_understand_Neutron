@@ -10,9 +10,13 @@ OpenStack 的 LBaaS 实现中有三个重要概念：
 
 其中，Pool 是要进行负载均衡的资源池（一般需要对应到某一个子网），可以指定负载均衡的提供机制（例如默认的 HAProxy）、均衡的协议（TCP、HTTP、HTTPS）和端口等、均衡的策略。
 
+![pool](../_images/lbaas_pool.png)
+
 定义完成 Pool 后可以往里面添加 Member（即虚拟机），并为各个成员分配权值，指定的目标端口等。
+![member](../_images/lbaas_member.png)
 
 最后，定义一个 Monitor，负责定期探测成员的状态。
+![monitor](../_images/lbaas_monitor.png)
 
 例如，我们创建一个 Pool，添加子网 10.0.0.0/24，并添加启动的虚机 10.0.0.2 和 10.0.0.4 作为成员，创建一个 VIP（例如 10.0.0.250）来均衡 TCP 协议，端口 22 的请求。
 
