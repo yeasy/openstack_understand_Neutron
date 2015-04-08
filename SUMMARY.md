@@ -40,6 +40,8 @@
    * [网络节点](dvr/network_node.md)
    * [计算节点](dvr/compute_node.md)
    * [配置](dvr/config.md)
+* [工具](tool/README.md)
+   * [easyOVS](tool/easyovs.md)
 * [参考](ref/README.md)
 * [附：安装配置](appendix_install/README.md)
 
