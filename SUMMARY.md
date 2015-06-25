@@ -10,7 +10,7 @@
    * [计算节点](vlan_mode/compute_node.md)
    * [网络节点](vlan_mode/network_node.md)
 * [VXLAN 模式](vxlan_mode/README.md)
-   * [计算节点](compute_node/README.md)
+   * [计算节点](vxlan_mode/compute_node/README.md)
        * [br-int](vxlan_mode/compute_node/br-int.md)
        * [br-tun](vxlan_mode/compute_node/br-tun.md)
    * [网络节点](vxlan_mode/network_node/README.md)
