@@ -1,5 +1,5 @@
 # 附：安装配置
-参考 https://github.com/yeasy/openstack-tool。
+参考 [https://github.com/yeasy/openstack-tool](https://github.com/yeasy/openstack-tool)。
 
 # DevStack 安装 OpenStack 多节点（Juno+Neutron+ML2+VXLAN）
 
