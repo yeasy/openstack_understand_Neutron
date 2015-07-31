@@ -1,7 +1,7 @@
 ## 计算节点
 需要额外启用 l3_agent（dvr 模式），以及 metadata agent。
 
-其实，跟传统情况下的网络节点十分类似。每个路由器有自己的命名空间，负责跨子网的转发。
+其实，跟传统情况下的网络节点十分类似。每个东西向路由器有自己的命名空间，负责跨子网的转发。另外，多一个 floating 路由器，专门负责经由 floating 地址的南北向转发。
 
 ### [东西流量](https://wiki.openstack.org/wiki/Neutron/DVR_L2_Agent)
 ![How DVR works](../_images/How_DVR_works.png)

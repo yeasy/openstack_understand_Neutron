@@ -40,6 +40,7 @@
    * [网络节点](dvr/network_node.md)
    * [计算节点](dvr/compute_node.md)
    * [配置](dvr/config.md)
+   * [工作流程](dvr/workflow.md)
    * [实现细节](dvr/implementation.md)
 * [工具](tool/README.md)
    * [easyOVS](tool/easyovs.md)

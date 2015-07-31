@@ -9,7 +9,7 @@ router_distributed = True
 ```
 
 ### L3 Agent
-`/etc/neutron/l3_agent.conf`
+`/etc/neutron/l3_agent.ini`
 
 ```sh
 agent_mode = [dvr_snat | dvr | legacy ]
