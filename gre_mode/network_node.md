@@ -14,8 +14,8 @@ Bridge br-tun
                 type: gre
                 options: {in_key=flow, local_ip="10.0.0.100", out_key=flow, remote_ip="10.0.0.101"}
 ```
-Compute节点上发往GRE隧道的网包最终抵达Network节点上的br-tun，该网桥的规则包括：
-```
+Compute 节点上发往 GRE 隧道的网包最终抵达 Network 节点上的 br-tun，该网桥的规则包括：
+```sh
 # ovs-ofctl dump-flows br-tun
 NXST_FLOW reply (xid=0x4):
 cookie=0x0, duration=19596.862s, table=0, n_packets=344, n_bytes=66762, idle_age=4, priority=1,in_port=1 actions=resubmit(,1)
@@ -32,7 +32,7 @@ cookie=0x0, duration=19596.862s, table=0, n_packets=344, n_bytes=66762, idle_age
  cookie=0x0, duration=9356.592s, table=21, n_packets=9, n_bytes=586, idle_age=5027, priority=1,dl_vlan=1 actions=strip_vlan,set_tunnel:0x1,output:2
  cookie=0x0, duration=19594.759s, table=21, n_packets=12, n_bytes=924, idle_age=5057, priority=0 actions=drop
 ```
-这些规则跟Compute节点上br-tun的规则相似，完成tunnel跟vlan之间的转换。
+这些规则跟 Compute 节点上 br-tun 的规则相似，完成 tunnel 跟 vlan 之间的转换。
 
 ### br-int
 ```
@@ -61,14 +61,14 @@ NXST_FLOW reply (xid=0x4):
  cookie=0x0, duration=18198.244s, table=0, n_packets=849, n_bytes=164654, idle_age=43, priority=1 actions=NORMAL
 ```
 ### 网络名字空间
-在linux中，网络名字空间可以被认为是隔离的拥有单独网络栈（网卡、路由转发表、iptables）的环境。网络名字空间经常用来隔离网络设备和服务，只有拥有同样网络名字空间的设备，才能看到彼此。
+在 Linux 中，网络名字空间可以被认为是隔离的拥有单独网络栈（网卡、路由转发表、iptables）的环境。网络名字空间经常用来隔离网络设备和服务，只有拥有同样网络名字空间的设备，才能看到彼此。
 可以用ip netns list命令来查看已经存在的名字空间。
 ```sh
 # ip netns
 qdhcp-88b1609c-68e0-49ca-a658-f1edff54a264
 qrouter-2d214fde-293c-4d64-8062-797f80ae2d8f
 ```
-qdhcp开头的名字空间是dhcp服务器使用的，qrouter开头的则是router服务使用的。
+qdhcp 开头的名字空间是 dhcp 服务器使用的，qrouter 开头的则是 router 服务使用的。
 可以通过 `ip netns exec namespaceid command` 来在指定的网络名字空间中执行网络命令，例如
 ```sh
 # ip netns exec qdhcp-88b1609c-68e0-49ca-a658-f1edff54a264 ip addr
@@ -78,10 +78,10 @@ qdhcp开头的名字空间是dhcp服务器使用的，qrouter开头的则是rout
     inet6 fe80::f816:3eff:fe10:2f03/64 scope link
        valid_lft forever preferred_lft forever
 ```
-可以看到，dhcp服务的网络名字空间中只有一个网络接口“ns-f14c598d-98”，它连接到br-int的tapf14c598d-98接口上。
+可以看到，dhcp 服务的网络名字空间中只有一个网络接口“ns-f14c598d-98”，它连接到 br-int 的 tapf14c598d-98 接口上。
 
 ### dhcp 服务
-dhcp服务是通过dnsmasq进程（轻量级服务器，可以提供dns、dhcp、tftp等服务）来实现的，该进程绑定到dhcp名字空间中的br-int的接口上。可以查看相关的进程。
+dhcp 服务是通过 dnsmasq 进程（轻量级服务器，可以提供 dns、dhcp、tftp 等服务）来实现的，该进程绑定到 dhcp 名字空间中的 br-int 的接口上。可以查看相关的进程。
 ```sh
 # ps -fe | grep 88b1609c-68e0-49ca-a658-f1edff54a264
 nobody   23195     1  0 Oct26 ?        00:00:00 dnsmasq --no-hosts --no-resolv --strict-order --bind-interfaces --interface=ns-f14c598d-98 --except-interface=lo --pid-file=/var/lib/neutron/dhcp/88b1609c-68e0-49ca-a658-f1edff54a264/pid --dhcp-hostsfile=/var/lib/neutron/dhcp/88b1609c-68e0-49ca-a658-f1edff54a264/host --dhcp-optsfile=/var/lib/neutron/dhcp/88b1609c-68e0-49ca-a658-f1edff54a264/opts --dhcp-script=/usr/bin/neutron-dhcp-agent-dnsmasq-lease-update --leasefile-ro --dhcp-range=tag0,10.1.0.0,static,120s --conf-file= --domain=openstacklocal
@@ -90,8 +90,8 @@ root     23196 23195  0 Oct26 ?        00:00:00 dnsmasq --no-hosts --no-resolv -
 
 
 ###	router服务
-首先，要理解什么是router，router是提供跨subnet的互联功能的。比如用户的内部网络中主机想要访问外部互联网的地址，就需要router来转发（因此，所有跟外部网络的流量都必须经过router）。目前router的实现是通过iptables进行的。
-同样的，router服务也运行在自己的名字空间中，可以通过如下命令查看：
+首先，要理解什么是 router，router 是提供跨 subnet 的互联功能的。比如用户的内部网络中主机想要访问外部互联网的地址，就需要 router 来转发（因此，所有跟外部网络的流量都必须经过 router）。目前 router 的实现是通过 iptables 进行的。
+同样的，router 服务也运行在自己的名字空间中，可以通过如下命令查看：
 ```sh
 # ip netns exec qrouter-2d214fde-293c-4d64-8062-797f80ae2d8f ip addr
 66: qg-d48b49e0-aa: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
@@ -108,9 +108,9 @@ root     23196 23195  0 Oct26 ?        00:00:00 dnsmasq --no-hosts --no-resolv -
 ```
 可以看出，该名字空间中包括两个网络接口。
 
-第一个接口qg-d48b49e0-aa（即K）是外部接口（qg=q gateway），将路由器的网关指向默认网关（通过router-gateway-set命令指定），这个接口连接到br-ex上的tapd48b49e0-aa（即L）。
+第一个接口 qg-d48b49e0-aa（即K）是外部接口（qg=q gateway），将路由器的网关指向默认网关（通过 router-gateway-set 命令指定），这个接口连接到 br-ex 上的tapd48b49e0-aa（即L）。
 
-第二个接口qr-c2d7dd02-56（即N，qr=q bridge）跟br-int上的tapc2d7dd02-56口（即M）相连，将router进程连接到集成网桥上。
+第二个接口 qr-c2d7dd02-56（即 N，qr=q bridge）跟 br-int 上的 tapc2d7dd02-56 口（即 M）相连，将 router 进程连接到集成网桥上。
 
 查看该名字空间中的路由表：
 ```sh
@@ -119,11 +119,11 @@ root     23196 23195  0 Oct26 ?        00:00:00 dnsmasq --no-hosts --no-resolv -
 10.1.0.0/24 dev qr-c2d7dd02-56  proto kernel  scope link  src 10.1.0.1
 default via 172.24.4.225 dev qg-d48b49e0-aa
 ```
-其中，第一条规则是将到172.24.4.224/28段的访问都从网卡qg-d48b49e0-aa（即K）发出。
+其中，第一条规则是将到 172.24.4.224/28 段的访问都从网卡 qg-d48b49e0-aa（即 K）发出。
 
-第二条规则是将到10.1.0.0/24段的访问都从网卡qr-c2d7dd02-56（即N）发出。
-最后一条是默认路由，所有的通过qg-d48b49e0-aa网卡（即K）发出。
-floating ip服务同样在路由器名字空间中实现，例如如果绑定了外部的floating ip 172.24.4.228到某个虚拟机10.1.0.2，则nat表中规则为：
+第二条规则是将到 10.1.0.0/24 段的访问都从网卡 qr-c2d7dd02-56（即 N）发出。
+最后一条是默认路由，所有的通过 qg-d48b49e0-aa 网卡（即 K）发出。
+floating ip 服务同样在路由器名字空间中实现，例如如果绑定了外部的 floating ip 172.24.4.228 到某个虚拟机 10.1.0.2，则 nat 表中规则为：
 ```sh
 # ip netns exec qrouter-2d214fde-293c-4d64-8062-797f80ae2d8f iptables -t nat -S
 -P PREROUTING ACCEPT
@@ -148,13 +148,13 @@ floating ip服务同样在路由器名字空间中实现，例如如果绑定了
 -A neutron-l3-agent-snat -s 10.1.0.0/24 -j SNAT --to-source 172.24.4.227
 -A neutron-postrouting-bottom -j neutron-l3-agent-snat
 ```
-其中SNAT和DNAT规则完成外部floating ip到内部ip的映射：
+其中 SNAT 和 DNAT 规则完成外部 floating ip 到内部 ip 的映射：
 ```sh
 -A neutron-l3-agent-OUTPUT -d 172.24.4.228/32 -j DNAT --to-destination 10.1.0.2
 -A neutron-l3-agent-PREROUTING -d 172.24.4.228/32 -j DNAT --to-destination 10.1.0.2
 -A neutron-l3-agent-float-snat -s 10.1.0.2/32 -j SNAT --to-source 172.24.4.228
 ```
-另外有一条SNAT规则把所有其他的内部IP出来的流量都映射到外部IP 172.24.4.227。这样即使在内部虚拟机没有外部IP的情况下，也可以发起对外网的访问。
+另外有一条 SNAT 规则把所有其他的内部IP出来的流量都映射到外部IP 172.24.4.227。这样即使在内部虚拟机没有外部IP的情况下，也可以发起对外网的访问。
 ```
 -A neutron-l3-agent-snat -s 10.1.0.0/24 -j SNAT --to-source 172.24.4.227
 ```
@@ -171,17 +171,17 @@ Bridge br-ex
             Interface "qg-1c3627de-1b"
                 type: internal
 ```
-br-ex上直接连接到外部物理网络，一般情况下网关在物理网络中已经存在，则直接转发即可。
+br-ex 上直接连接到外部物理网络，一般情况下网关在物理网络中已经存在，则直接转发即可。
 ```sh
 # ovs-ofctl dump-flows br-ex
 NXST_FLOW reply (xid=0x4):
  cookie=0x0, duration=23431.091s, table=0, n_packets=893539, n_bytes=504805376, idle_age=0, priority=0 actions=NORMAL
 ```
-如果对外部网络的网关地址配置到了br-ex（即br-ex作为一个网关）：
+如果对外部网络的网关地址配置到了 br-ex（即br-ex作为一个网关）：
 ```sh
 # ip addr add 172.24.4.225/28 dev br-ex
 ```
-需要将内部虚拟机发出的流量进行SNAT，之后发出。
+需要将内部虚拟机发出的流量进行 SNAT，之后发出。
 ```sh
 # iptables -A FORWARD -d 172.24.4.224/28 -j ACCEPT
 # iptables -A FORWARD -s 172.24.4.224/28 -j ACCEPT
