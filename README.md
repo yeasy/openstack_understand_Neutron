@@ -4,7 +4,10 @@
 
 本书将剖析 Neutron 组件的原理和实现。
 
-最新版本在线阅读：[GitBook](https://www.gitbook.io/book/yeasy/openstack_understand_Neutron) 或 [Github](https://github.com/yeasy/openstack_understand_Neutron/blob/master/SUMMARY.md)。
+在线阅读：[GitBook](https://www.gitbook.io/book/yeasy/openstack_understand_Neutron) 或 [Github](https://github.com/yeasy/openstack_understand_Neutron/blob/master/SUMMARY.md)。
+
+* pdf 版本 [下载](https://www.gitbook.com/download/pdf/book/yeasy/openstack_understand_neutron)
+* epub 版本 [下载](https://www.gitbook.com/download/epub/book/yeasy/openstack_understand_neutron)
 
 本书源码在 Github 上维护，欢迎参与： [https://github.com/yeasy/openstack_understand_Neutron](https://github.com/yeasy/openstack_understand_Neutron)。
 
